@@ -1,5 +1,8 @@
 package com.example.mrc.attendencesystem.entity;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class User implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	private int id;
@@ -13,6 +16,18 @@ public class User implements java.io.Serializable{
 	private int age;
 	private String studentId;
 	private String operation;
+	public User(ResultSet resultSet) throws SQLException{
+		setId(resultSet.getInt("id"));
+		setPhoneNumber(resultSet.getString("phonenumber"));
+		setEmail(resultSet.getString("email"));
+		setPassword(resultSet.getString("password"));
+		setUserName(resultSet.getString("username"));
+		setGender(resultSet.getInt("gender"));
+		setCreateTime(resultSet.getString("create_time"));
+		setUpdateTime(resultSet.getString("update_time"));
+		setAge(resultSet.getInt("age"));
+		setStudentId(resultSet.getString("student_id"));
+	}
 	public String getOperation() {
 		return operation;
 	}
@@ -52,7 +67,7 @@ public class User implements java.io.Serializable{
 	public int getGender() {
 		return gender;
 	}
-	public void setGender(short gender) {
+	public void setGender(int gender) {
 		this.gender = gender;
 	}
 	public String getCreateTime() {
@@ -79,5 +94,21 @@ public class User implements java.io.Serializable{
 	public void setStudentId(String studentId) {
 		this.studentId = studentId;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", phoneNumber='" + phoneNumber + '\'' +
+				", email='" + email + '\'' +
+				", password='" + password + '\'' +
+				", userName='" + userName + '\'' +
+				", gender=" + gender +
+				", createTime='" + createTime + '\'' +
+				", updateTime='" + updateTime + '\'' +
+				", age=" + age +
+				", studentId='" + studentId + '\'' +
+				", operation='" + operation + '\'' +
+				'}';
+	}
 }

@@ -55,6 +55,8 @@ public class GroupDao {
 		}
 		return res;
 	}
+
+
 /*	public static void main(String[] args){
 		String s=new GroupDao().getGroup();
 		System.out.println(s);

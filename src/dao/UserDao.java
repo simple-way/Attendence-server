@@ -2,7 +2,10 @@ package dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
 
+import com.example.mrc.attendencesystem.entity.UnReceivedMessage;
 import com.example.mrc.attendencesystem.entity.User;
 
 public class UserDao {
@@ -44,6 +47,12 @@ public class UserDao {
 		}
 		return false;
 	}
+
+	public List<UnReceivedMessage> judgeUnReceivedMessage(String phoneNumber){
+
+		return null;
+	}
+
 	public boolean delBuddy(String myAccount,String dfAccount){
 		try {
 			String sql = "delete  from yq_buddy where baccount=? and bbuddy=?";
@@ -85,7 +94,7 @@ public class UserDao {
 		}
 		return res;
 	}
-	public String getUser(String phoneNumber){
+	public List<User> getUser(String phoneNumber){
 		String res="";
 		try {
 			String sql = "select * from user where phonenumber="+phoneNumber;
@@ -99,10 +108,10 @@ public class UserDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return res;
+		return null;
 	}
 	
-	public boolean changeState(String phonenumber,int state){
+	public boolean changeStateOnline(String phonenumber,int state){
 		try {
 			String sql = "update user set isonline=? where phonenumber=?";
 			Connection conn = DBUtil.getDBUtil().getConnection();
@@ -134,5 +143,7 @@ public class UserDao {
 		}
 		return false;
 	}
+
+
 	
 }

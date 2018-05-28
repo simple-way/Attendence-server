@@ -32,7 +32,7 @@ public class Server {
 					if(b){
 						System.out.println("["+phoneNumber+"]上线了！");
 						//更改数据库用户状态
-						udao.changeState(phoneNumber, 1);
+						udao.changeStateOnline(phoneNumber, 1);
 						//得到个人信息
 						String user= phoneNumber;
 						//返回一个成功登陆的信息包，并附带个人信息
