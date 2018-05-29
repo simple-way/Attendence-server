@@ -26,7 +26,7 @@ public class ServerConClientThread extends Thread {
 				if(m.getType().equals(MessageType.COM_MES)){//如果是普通消息包
 					DoWhatAndSendMes.sendMes(m);
 				}else if(m.getType().equals(MessageType.GROUP_MES)){ //如果是群消息
-					DoWhatAndSendMes.sendGroupMes(m);
+					//DoWhatAndSendMes.sendGroupMes(m);
 				}else if(m.getType().equals(MessageType.GET_ONLINE_FRIENDS)){//如果是请求好友列表
 					DoWhatAndSendMes.sendBuddyList(m);
 				}else if(m.getType().equals(MessageType.DEL_BUDDY)){ //如果是删除好友

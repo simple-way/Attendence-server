@@ -49,8 +49,31 @@ public class UserDao {
 	}
 
 	public List<UnReceivedMessage> judgeUnReceivedMessage(String phoneNumber){
-
+		try {
+			String sql = "select * from tsmessage where receiverid=?";
+			Connection conn = DBUtil.getDBUtil().getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1,getUserId(phoneNumber));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return null;
+	}
+
+	public boolean insertUnReceivedMessage(UnReceivedMessage unReceivedMessage){
+		try {
+			String sql = "insert into tsmessaage (type,receiverid,content,state) values (?,?,?,?)";
+			Connection conn = DBUtil.getDBUtil().getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1,unReceivedMessage.getType());
+			ps.setInt(2,unReceivedMessage.getReceiverId());
+			ps.setString(3,unReceivedMessage.getContent());
+			ps.setInt(4,unReceivedMessage.getState());
+			return ps.executeUpdate() > 0;
+		}catch (SQLException e){
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public boolean delBuddy(String myAccount,String dfAccount){
@@ -94,21 +117,22 @@ public class UserDao {
 		}
 		return res;
 	}
-	public List<User> getUser(String phoneNumber){
-		String res="";
+	public User getUser(String phoneNumber){
 		try {
 			String sql = "select * from user where phonenumber="+phoneNumber;
 			Connection conn = DBUtil.getDBUtil().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
-			while(rs.next()){
-				res=res+rs.getString("phonenumber")+"_"+rs.getString("username")+"_"
-						+rs.getString("age")+"_"+rs.getString("student_id");
-			}
+			rs.first();
+			return new User(rs);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public int getUserId(String phoneNumber){
+		return getUser(phoneNumber).getId();
 	}
 	
 	public boolean changeStateOnline(String phonenumber,int state){

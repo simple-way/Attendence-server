@@ -54,7 +54,7 @@ public class DoWhatAndSendMes {
 		}
 	}
 	
-	public static void sendGroupMes(Message m){
+	/*public static void sendGroupMes(Message m){
 		
 		try{
 			List<String> list=gdao.getGroupMember(m.getReceiver());
@@ -72,6 +72,6 @@ public class DoWhatAndSendMes {
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-	}
+	}*/
 }
 

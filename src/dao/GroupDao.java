@@ -1,7 +1,10 @@
 package dao;
+import com.example.mrc.attendencesystem.entity.User;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,20 +43,37 @@ public class GroupDao {
 		return g;
 	}
 	
-	public List<String> getGroupMember(String gaccount){
-		List<String> res=new ArrayList<String>();
+	public List<User> getGroupMember(int groupid){
+		List<User> res=new ArrayList<>();
 		try {
-			String sql = "select * from yq_group_member where gaccount="+gaccount;
+			String sql = "SELECT * FROM user WHERE id IN (SELECT userid FROM grouptouser WHERE groupid=?)";
 			Connection conn = DBUtil.getDBUtil().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1,groupid);
 			ResultSet rs = ps.executeQuery();
 			while(rs.next()){
-				res.add(rs.getString("gmember"));
+				res.add(new User(rs));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return res;
+	}
+
+	public boolean insertMessageIntoGroup(int groupId,int fromId,int contentType, String content){
+		try {
+			String sql = "insert into groupsmsgcontent (groupid,fromid,contenttype,content) values (?,?,?,?)";
+			Connection conn = DBUtil.getDBUtil().getConnection();
+			PreparedStatement ps = conn.prepareStatement(sql);
+			ps.setInt(1,groupId);
+			ps.setInt(2,fromId);
+			ps.setInt(3,contentType);
+			ps.setString(4,content);
+			return ps.executeUpdate() > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 
