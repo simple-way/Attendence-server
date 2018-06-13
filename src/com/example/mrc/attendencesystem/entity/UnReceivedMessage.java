@@ -1,36 +1,33 @@
 package com.example.mrc.attendencesystem.entity;
 
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UnReceivedMessage implements Serializable{
     private static final long serialVersionUID = 3L;
-    int type;
-    int receiverId;
-    String content;
+    int groupId;
+    String receiverId;
     int state;
 
-    public int getType() {
-        return type;
+    public UnReceivedMessage(ResultSet rs)throws SQLException{
+        setGroupId(rs.getInt("groupid"));
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public int getGroupId() {
+        return groupId;
     }
 
-    public int getReceiverId() {
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getReceiverId() {
         return receiverId;
     }
 
-    public void setReceiverId(int receiverId) {
+    public void setReceiverId(String receiverId) {
         this.receiverId = receiverId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public int getState() {

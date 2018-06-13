@@ -2,25 +2,35 @@
  * 管理客户端连接的类
  */
 package model;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import dao.GroupDao;
+
+import java.util.*;
 
 
 public class ManageServerConClient {
 	public static HashMap hm=new HashMap<String,ServerConClientThread>();
 	
 	//添加一个客户端通信线程
-	public static void addClientThread(String phoneNumber, ServerConClientThread cc){
+	public synchronized static void addClientThread(String phoneNumber, ServerConClientThread cc){
 		hm.put(phoneNumber,cc);
 	}
 	//得到一个客户端通信线程
 	public static ServerConClientThread getClientThread(String i){
 		return (ServerConClientThread)hm.get(i);
 	}
+
+	/*public static synchronized ArrayList<ServerConClientThread> getOnlineGroupMemberThread(int groupId){
+	    ArrayList<ServerConClientThread> serverConClientThreads = new ArrayList<>();
+        Set<String> allGroupMemberName = GroupDao.getGroupDao().getGroupMemberName(groupId);
+        Set<String> allOnlineMemberName = hm.keySet();
+        allOnlineMemberName.retainAll(allGroupMemberName);
+        for(String phoneNumber : allOnlineMemberName){
+            serverConClientThreads.add((ServerConClientThread) hm.get(phoneNumber));
+        }
+	    return serverConClientThreads;
+    }*/
 	
-	public static void removeClientThread(String phoneNumber) {
+	public synchronized static void removeClientThread(String phoneNumber) {
 		hm.remove(phoneNumber);
 	}
 	//返回当前在线人的情况

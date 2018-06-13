@@ -9,8 +9,10 @@ import com.example.mrc.attendencesystem.entity.MessageType;
 
 public class ServerConClientThread extends Thread {
 	Socket s;
-	public ServerConClientThread(Socket s){
+	private String mPhoneNumber;
+	public ServerConClientThread(Socket s, String phoneNumber){
 		this.s=s;
+        mPhoneNumber = phoneNumber;
 	}
 
 	public void run() {
@@ -34,9 +36,11 @@ public class ServerConClientThread extends Thread {
 				}
 			} catch (Exception e) {
 				try {
+				    ManageServerConClient.removeClientThread(mPhoneNumber);
+                    ois.close();
 					s.close();
-					ois.close();
-				} catch (IOException e1) {	
+				} catch (IOException e1) {
+				    e1.printStackTrace();
 				}
 				e.printStackTrace();
 			}

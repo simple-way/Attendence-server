@@ -7,7 +7,6 @@ public class User implements java.io.Serializable{
 	private static final long serialVersionUID = 1L;
 	private int id;
 	private String phoneNumber;
-	private String email;
 	private String password;
 	private String userName;
 	private int gender;
@@ -19,7 +18,6 @@ public class User implements java.io.Serializable{
 	public User(ResultSet resultSet) throws SQLException{
 		setId(resultSet.getInt("id"));
 		setPhoneNumber(resultSet.getString("phonenumber"));
-		setEmail(resultSet.getString("email"));
 		setPassword(resultSet.getString("password"));
 		setUserName(resultSet.getString("username"));
 		setGender(resultSet.getInt("gender"));
@@ -45,12 +43,6 @@ public class User implements java.io.Serializable{
 	}
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
 	}
 	public String getPassword() {
 		return password;
@@ -100,7 +92,6 @@ public class User implements java.io.Serializable{
 		return "User{" +
 				"id=" + id +
 				", phoneNumber='" + phoneNumber + '\'' +
-				", email='" + email + '\'' +
 				", password='" + password + '\'' +
 				", userName='" + userName + '\'' +
 				", gender=" + gender +

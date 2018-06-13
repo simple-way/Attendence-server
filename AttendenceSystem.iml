@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="EclipseModuleManager">
+    <libelement value="jar://$MODULE_DIR$/libs/mysql-connector-java-5.1.7-bin.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/libs/json-lib-2.4-jdk15.jar!/" />
+    <libelement value="jar://$MODULE_DIR$/libs/junit-4.12.jar!/" />
+    <libelement value="file:///JunitTest/libs/hamcrest-library-1.3.jar" />
+    <libelement value="jar://$MODULE_DIR$/libs/hamcrest-core-1.3.jar!/" />
+    <src_description expected_position="1">
+      <src_folder value="file://$MODULE_DIR$/src" expected_position="1" />
+      <src_folder value="file://$MODULE_DIR$/src/test/java" expected_position="2" />
+    </src_description>
+  </component>
+</module>
