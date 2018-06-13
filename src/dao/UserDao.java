@@ -77,6 +77,18 @@ public class UserDao {
         return unReceivedMessages;
     }
 
+    public void removeUnReceivedMessage(String phoneNumber){
+        try {
+            String sql = "update tsmessage set state=1 where receiverid=?";
+            Connection conn = DBUtil.getDBUtil().getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1,phoneNumber);
+            ps.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
     public boolean insertUnReceivedMessage(UnReceivedMessage unReceivedMessage) {
         try {
             String sql = "insert into tsmessage (groupid, receiverid, state) VALUES (?,?,?)";

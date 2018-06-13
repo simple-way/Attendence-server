@@ -31,7 +31,9 @@ public class OutputThreadMap {
 
 	// 移除写线程的方法
 	public synchronized void remove(String phone) {
-		map.remove(phone);
+		OutputThread outputThread = map.get(phone);
+		outputThread.setStart(false);//终止线程 清理资源
+	    map.remove(phone);
 	}
 
 	// 取出写线程的方法,群聊的话，可以遍历取出对应写线程
@@ -48,15 +50,23 @@ public class OutputThreadMap {
 		return list;
 	}
 
-    public synchronized ArrayList<OutputThread> getOnlineGroupMemberThread(int groupId){
-        ArrayList<OutputThread> outputThreads = new ArrayList<>();
+	//获取所有在线的群成员输出线程
+    public synchronized HashMap<String,OutputThread> getOnlineGroupMemberThread(int groupId){
+        HashMap<String,OutputThread> hashMap = new HashMap<>();
         Set<String> allGroupMemberName = GroupDao.getGroupDao().getGroupMemberName(groupId);
         Set<String> allOnlineMemberName = map.keySet();
         allOnlineMemberName.retainAll(allGroupMemberName);
         for(String phoneNumber : allOnlineMemberName){
-            outputThreads.add(map.get(phoneNumber));
+            hashMap.put(phoneNumber,map.get(phoneNumber));
         }
-        return outputThreads;
+        return hashMap;
+    }
+
+    public synchronized Set<String> getOfflineGroupMember(int groupId){
+        Set<String> allGroupMemberName = GroupDao.getGroupDao().getGroupMemberName(groupId);
+        Set<String> allOnlineMemberName = map.keySet();
+        allGroupMemberName.removeAll(allOnlineMemberName);
+        return allGroupMemberName;
     }
 
 }

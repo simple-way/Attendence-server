@@ -104,6 +104,7 @@ public class Server {
         private ServerThread in;
         private OutputThread out;
         private OutputThreadMap outputThreadMap;
+        private String phoneNumber;
 
 
         public SocketTask(Socket socket) {

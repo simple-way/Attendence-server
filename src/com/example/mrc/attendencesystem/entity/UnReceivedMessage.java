@@ -10,6 +10,11 @@ public class UnReceivedMessage implements Serializable{
     String receiverId;
     int state;
 
+    public UnReceivedMessage(int groupId, String receiverId) {
+        this.groupId = groupId;
+        this.receiverId = receiverId;
+    }
+
     public UnReceivedMessage(ResultSet rs)throws SQLException{
         setGroupId(rs.getInt("groupid"));
     }
