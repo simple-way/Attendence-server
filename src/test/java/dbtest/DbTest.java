@@ -2,6 +2,7 @@ package dbtest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import com.example.mrc.attendencesystem.entity.GroupMessage;
 import dao.DBUtil;
 import dao.UserDao;
 import dbtest.dbtestutil.UserTestUtil;
@@ -41,10 +42,17 @@ public class DbTest {
 		assertThat(isOnline,is(1));
 	}
 
+	@Test
+    public void addOrdinaryMessage() throws SQLException{
+        GroupMessage groupMessage = new GroupMessage(2,"12",1,"abc");
+        UserTestUtil.addOrdinaryMessage(mConnention,groupMessage);
+        mConnention.commit();
+    }
+
 
 	@After
 	public void after() throws SQLException{
-		mConnention.rollback();
+		//mConnention.rollback();
 		mConnention.close();
 	}
 

@@ -74,10 +74,14 @@ public class OutputThread extends Thread {
                 //dataOutputStream.flush();
                 //StringBuffer sBuilder = new StringBuffer();
                 //sBuilder.append(outputString);
+                //System.out.println(mPhoneNumber);
                 oStreamWriter.write(outputString);
                 oStreamWriter.flush();
                 if (object != null && object.getType() != TranObjectType.HEART_TEST) {
-                    System.out.println(outputString);
+                    if(object.getType() == TranObjectType.GET_GROUP_MESSAGE)
+                        System.out.println("GET GROUP MESSAGE" + object.getGroupMessageArrayList().size());
+                    else
+                        System.out.println(outputString);
                 }
 
             }

@@ -1,9 +1,6 @@
 package dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -244,7 +241,7 @@ public class UserDao {
             String sql = "INSERT INTO groupsmsgcontent (groupid, fromid, contenttype, content)" +
                     " VALUES (?,?,?,?)";
             Connection conn = DBUtil.getDBUtil().getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1,groupMessage.getGroupId());
             ps.setString(2,groupMessage.getFromId());
             ps.setInt(3,1);
@@ -252,7 +249,7 @@ public class UserDao {
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if(rs.next())
-                id = rs.getInt("id");
+                id = rs.getInt(1);
         }catch (SQLException e){
             e.printStackTrace();
         }

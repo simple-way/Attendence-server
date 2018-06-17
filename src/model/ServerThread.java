@@ -64,6 +64,7 @@ public class ServerThread extends Thread {
                         break;
                     }
                 }
+                System.out.println("tran once" + sBuilder.toString());
 
                 gson = new GsonBuilder().setPrettyPrinting() // 格式化输出（序列化）
                         .setDateFormat("yyyy-MM-dd HH:mm:ss") // 日期格式化输出
@@ -74,12 +75,13 @@ public class ServerThread extends Thread {
                 if (readObject != null) {
                     lastReceiveHeart = System.currentTimeMillis();
                     phone = readObject.getFromUser();
+                    System.out.println("phone:" + phone);
                     if (readObject.getType() != TranObjectType.HEART_TEST) {
                         System.out.println("msg :" + sBuilder.toString());
                     }
 
                 }
-                if (System.currentTimeMillis() - lastReceiveHeart > 100000) {
+                /*if (System.currentTimeMillis() - lastReceiveHeart > 100000) {
                     try {
                         if (phone != null) {
                             UserDao.getUserDao().userOffLine(phone);
@@ -91,11 +93,14 @@ public class ServerThread extends Thread {
                         // TODO: handle exception
                         e.printStackTrace();
                     }
-                }
+                }*/
                 TranObject serverResult = execute(readObject);
                 pushMessage(readObject);// 执行推送的消息
                 if (serverResult != null) {
-                    out.setMessage(serverResult);
+                    map.getAll().forEach(System.out::println);
+                    System.out.println("当前out地址" +map.getById(phone));
+                    map.getById(phone).setMessage(serverResult);
+                    //out.setMessage(serverResult);
                 }
             }
             if (iReader != null) {
@@ -108,7 +113,17 @@ public class ServerThread extends Thread {
                 socket.close();
             }
         } catch (IOException e) {
+            e.printStackTrace();
             // TODO: handle exception
+            /*if (iReader != null) {
+                iReader.close();
+            }
+            if (inputStream != null) {
+                inputStream.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }*/
         }
 
     }
@@ -381,29 +396,27 @@ public class ServerThread extends Thread {
                 case SEND_GROUP_MESSAGE:
                     //GroupMessage req
                     GroupMessage sendGroupMessage = readObject.getSendGroupMessage();
-                    boolean isSuccess;
                     if (sendGroupMessage.getContentType() == 1) {//普通消息
-                        isSuccess = userDao.addOrdinaryMessage(sendGroupMessage) > 0;
+                        userDao.addOrdinaryMessage(sendGroupMessage);
                     } else {//签到消息
                         GroupSignInMessage signInMessage = readObject.getSignInfo();
-                        isSuccess = userDao.addSignMessage(signInMessage);
+                        userDao.addSignMessage(signInMessage);
                     }
                     //将群内离线用户添加一条离线信息
-                    Set<String> allOfflineMembers = OutputThreadMap.getInstance().getOfflineGroupMember(readObject.getGroup().getGroupId());
+                    Set<String> allOfflineMembers = map.getOfflineGroupMember(readObject.getGroup().getGroupId());
                     for(String offlineMember : allOfflineMembers){
                         userDao.insertUnReceivedMessage(new UnReceivedMessage(sendGroupMessage.getGroupId(),offlineMember));
                     }
                     //发送消息给群内在线的成员 仅有一个通知 通知该成员有某个群的一条新消息
                     HashMap<String, OutputThread> outputThreads = OutputThreadMap.getInstance().getOnlineGroupMemberThread(readObject.getGroup().getGroupId());
                     for (String phoneNumber : outputThreads.keySet()) {
+                        //System.out.println(phoneNumber);
                         TranObject tranObject = new TranObject(TranObjectType.SEND_GROUP_MESSAGE);
                         tranObject.setToUser(phoneNumber);
                         tranObject.setSendGroupMessage(sendGroupMessage);
                         tranObject.setSuccess(true);
                         outputThreads.get(phoneNumber).setMessage(tranObject, phoneNumber);
                     }
-                    TranObject sendMessageResult = new TranObject(TranObjectType.SEND_GROUP_MESSAGE);
-                    sendMessageResult.setSuccess(isSuccess);
                 /*case SEND_SIGN_RESPONSE:// 发送签到结果
                     GroupSignInMessage signInfo = readObject.getSignInfo();
                     boolean result = userDao.addSigninMessage(signInfo);
