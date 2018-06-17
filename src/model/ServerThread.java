@@ -410,6 +410,8 @@ public class ServerThread extends Thread {
                     //发送消息给群内在线的成员 仅有一个通知 通知该成员有某个群的一条新消息
                     HashMap<String, OutputThread> outputThreads = OutputThreadMap.getInstance().getOnlineGroupMemberThread(readObject.getGroup().getGroupId());
                     for (String phoneNumber : outputThreads.keySet()) {
+                        if(phoneNumber.equals(readObject.getFromUser()))
+                            continue;
                         //System.out.println(phoneNumber);
                         TranObject tranObject = new TranObject(TranObjectType.SEND_GROUP_MESSAGE);
                         tranObject.setToUser(phoneNumber);
