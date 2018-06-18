@@ -57,14 +57,16 @@ public class ServerThread extends Thread {
                 char[] buffer = new char[1024];
                 int count = 0;
                 String phone = null;
-                StringBuffer sBuilder = new StringBuffer();
+                StringBuilder sBuilder = new StringBuilder();
                 while ((count = iReader.read(buffer, 0, buffer.length)) > -1) {
                     sBuilder.append(buffer, 0, count);
-                    if (count < 1024 && count != 0) {
+                    if (count <= 1024 && count > 0) {
                         break;
                     }
                 }
-                System.out.println("tran once" + sBuilder.toString());
+                if(count < 1)//此时客户端socket连接断开
+                    break;
+                //System.out.println("tran once" + sBuilder.toString());
 
                 gson = new GsonBuilder().setPrettyPrinting() // 格式化输出（序列化）
                         .setDateFormat("yyyy-MM-dd HH:mm:ss") // 日期格式化输出
@@ -256,7 +258,7 @@ public class ServerThread extends Thread {
                         deleteGroup.setSuccess(false);
                     }
                     return deleteGroup;
-                case SEARCH_GROUP:
+                case SEARCH_GROUP://搜索群
                     Group group = readObject.getGroup();
                     System.out.println("SEARCH_GROUP");
                     TranObject sGroup = new TranObject(TranObjectType.SEARCH_GROUP);
@@ -289,8 +291,8 @@ public class ServerThread extends Thread {
                     usrObject.setSignInfoslist(signInfos);
                     return usrObject;
                 case GET_GROUP_SIGN_RECORD://获取群的历史签到记录
-                    String grGroupId = readObject.getFromUser();// 获取群Id
-                    ArrayList<GroupSignInMessage> gsignInfos = groupDao.getGroupSigns(Integer.valueOf(grGroupId));
+                    Group group1 = readObject.getGroup();
+                    ArrayList<GroupSignInMessage> gsignInfos = groupDao.getGroupSigns(group1.getGroupId());
                     System.out.println("GET_GROUP_SIGN_RECORD");
                     TranObject grObject = new TranObject(TranObjectType.GET_USER_SIGN_RECORD);
                     grObject.setSuccess(true);
@@ -309,6 +311,31 @@ public class ServerThread extends Thread {
                     getGroupMessageResult.setGroupMessageArrayList(groupMessages);
                     getGroupMessageResult.setSuccess(true);
                     return getGroupMessageResult;
+                case GET_SINGLE_SIGNIN_RECORD:
+                    GroupMessage signInRecord = readObject.getSendGroupMessage();
+                    ArrayList<GroupSignInMessage> groupSignInMessages = groupDao.getAllSingleSignInMessage(signInRecord.getMessageId());
+                    TranObject tranObject = new TranObject(TranObjectType.GET_SINGLE_SIGNIN_RECORD);
+                    tranObject.setSignInfoslist(groupSignInMessages);
+                    tranObject.setSuccess(true);
+                    return tranObject;
+                case USER_SIGN_IN://用户在客户端进行判断 之后向服务端发起确认签到记录
+                    GroupSignInMessage signInMessage = readObject.getSignInfo();
+                    boolean result = groupDao.insertConfirmSignInRecord(signInMessage);
+                    TranObject signInResult = new TranObject(TranObjectType.USER_SIGN_IN);
+                    signInResult.setSuccess(result);
+                    return signInResult;
+                case GET_GROUP_MEMBERS:
+                    Group group2 = readObject.getGroup();
+                    ArrayList<User> users = groupDao.getGroupMember(group2.getGroupId());
+                    TranObject allUsers = new TranObject(TranObjectType.GET_GROUP_MEMBERS);
+                    allUsers.setGroupUsers(users);
+                    allUsers.setSuccess(true);
+                case SEND_JOIN_REQUEST:
+                    Group group3 = readObject.getGroup();
+                    String phoneNumber = readObject.getFromUser();
+                    boolean joinGroupResult = userService.joinGroup(phoneNumber,group3);
+                    TranObject joinGroup = new TranObject(TranObjectType.SEND_JOIN_REQUEST);
+                    joinGroup.setSuccess(joinGroupResult);
                 default:
                     break;
             }
@@ -403,15 +430,16 @@ public class ServerThread extends Thread {
                         userDao.addSignMessage(signInMessage);
                     }
                     //将群内离线用户添加一条离线信息
-                    Set<String> allOfflineMembers = map.getOfflineGroupMember(readObject.getGroup().getGroupId());
+                    System.out.println(sendGroupMessage.getGroupId());
+                    Set<String> allOfflineMembers = map.getOfflineGroupMember(sendGroupMessage.getGroupId());
                     for(String offlineMember : allOfflineMembers){
                         userDao.insertUnReceivedMessage(new UnReceivedMessage(sendGroupMessage.getGroupId(),offlineMember));
                     }
                     //发送消息给群内在线的成员 仅有一个通知 通知该成员有某个群的一条新消息
-                    HashMap<String, OutputThread> outputThreads = OutputThreadMap.getInstance().getOnlineGroupMemberThread(readObject.getGroup().getGroupId());
+                    HashMap<String, OutputThread> outputThreads = OutputThreadMap.getInstance().getOnlineGroupMemberThread(sendGroupMessage.getGroupId());
                     for (String phoneNumber : outputThreads.keySet()) {
                         if(phoneNumber.equals(readObject.getFromUser()))
-                            continue;
+                            continue; // 发送信息的群成员不向该成员发信息
                         //System.out.println(phoneNumber);
                         TranObject tranObject = new TranObject(TranObjectType.SEND_GROUP_MESSAGE);
                         tranObject.setToUser(phoneNumber);

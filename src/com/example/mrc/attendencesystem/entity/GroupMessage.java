@@ -1,9 +1,10 @@
 package com.example.mrc.attendencesystem.entity;
 
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class GroupMessage {
+public class GroupMessage implements Serializable{
     private int messageId;//消息Id
     private int groupId;//群ID
     private String fromId;//发起人ID 即手机号

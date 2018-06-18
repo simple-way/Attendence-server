@@ -21,8 +21,6 @@ public class User implements java.io.Serializable{
 		setPassword(resultSet.getString("password"));
 		setUserName(resultSet.getString("username"));
 		setGender(resultSet.getInt("gender"));
-		setCreateTime(resultSet.getString("create_time"));
-		setUpdateTime(resultSet.getString("update_time"));
 		setAge(resultSet.getInt("age"));
 		setStudentId(resultSet.getString("student_id"));
 	}

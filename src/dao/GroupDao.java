@@ -24,25 +24,21 @@ public class GroupDao {
         return mGroupDao;
     }
 
-    //TODO 搜索群未完成
 	//搜索群
 	public ArrayList<Group> getGroups(String groupName){
         ArrayList<Group> groups = new ArrayList<>();
 		try {
-			String sql = "select * from group where groupname like ?";
+			String sql = "select * from `group` where groupname like '%"+groupName+"%'";
 			Connection conn = DBUtil.getDBUtil().getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
-			ps.setString(1, groupName);
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()){
-			    Group group = new Group(rs);
-			    groups.add(group);
+			    groups.add(new Group(rs));
             }
-            return groups;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return groups;
 	}
 
 	public boolean outGroup(int groupId,int userId){
@@ -59,10 +55,11 @@ public class GroupDao {
         return false;
     }
 
-    public ArrayList<GroupSignInMessage> getGroupSigns(int groupId){
-        ArrayList<GroupSignInMessage> signInMessages = new ArrayList<>();
+    //获取群所有与发起的签到记录
+    public ArrayList<com.example.mrc.attendencesystem.entity.GroupSignInMessage> getGroupSigns(int groupId){
+        ArrayList<com.example.mrc.attendencesystem.entity.GroupSignInMessage> signInMessages = new ArrayList<>();
         try {
-            String sql = "select * from signin where groupid=?";
+            String sql = "select * from signin where groupid=? and type=1";
             Connection conn = DBUtil.getDBUtil().getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1,groupId);
@@ -75,6 +72,7 @@ public class GroupDao {
         }
         return signInMessages;
     }
+
 	
 	public String getGroupNick(int gaccount){
 		String g="";
@@ -109,9 +107,10 @@ public class GroupDao {
         }
         return null;
     }
-	
-	public List<User> getGroupMember(int groupid){
-		List<User> res=new ArrayList<>();
+
+    //获取所有群成员
+	public ArrayList<User> getGroupMember(int groupid){
+        ArrayList<User> res=new ArrayList<>();
 		try {
 			String sql = "SELECT * FROM user WHERE id IN (SELECT userid FROM grouptouser WHERE groupid=?)";
 			Connection conn = DBUtil.getDBUtil().getConnection();
@@ -147,11 +146,59 @@ public class GroupDao {
 		return false;
 	}
 
-	public boolean insertSignInRecord(GroupSignInMessage signinMessage){
+	//判断是否该用户已经确认签到过了，如果已经签到返回该记录id 否则返回0
+	public int judgeExistsConfirmSignIn(GroupSignInMessage signInMessage){
 	    try {
-	        String sql = "insert into signin ()";
-	        Connection conn= DBUtil.getDBUtil().getConnection();
+	        String sql = "select * from signin where recordid=? and receiver=?";
+	        Connection conn = DBUtil.getDBUtil().getConnection();
 	        PreparedStatement ps = conn.prepareStatement(sql);
+	        ps.setInt(1,signInMessage.getRecordId());
+	        ps.setString(2,signInMessage.getReceiverId());
+	        ResultSet rs = ps.executeQuery();
+	        if(rs.next()){
+	            return rs.getInt("id");
+            }
+        }catch (SQLException e){
+	        e.printStackTrace();
+        }
+        return 0;
+    }
+
+
+	public boolean insertConfirmSignInRecord(GroupSignInMessage signinMessage){
+	    try {
+	        int signId = judgeExistsConfirmSignIn(signinMessage);
+            System.out.println(signId);
+            if(signId == 0) {
+                String sql = "insert into signin (recordid, type, groupid, originator, " +
+                        "starttime, endtime, longitude, latitude, region, receiver," +
+                        " rlongitude, rlatitude, result) " +
+                        "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                Connection conn = DBUtil.getDBUtil().getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setInt(1, signinMessage.getRecordId());
+                ps.setInt(2, 2);
+                ps.setInt(3, signinMessage.getGroupId());
+                ps.setString(4, signinMessage.getOriginatorId());
+                ps.setLong(5, signinMessage.getStartTime());
+                ps.setLong(6, signinMessage.getEndTime());
+                ps.setDouble(7, signinMessage.getLongitude());
+                ps.setDouble(8, signinMessage.getLatitude());
+                ps.setInt(9, signinMessage.getRegion());
+                ps.setString(10, signinMessage.getReceiverId());
+                ps.setDouble(11, signinMessage.getRlongitude());
+                ps.setDouble(12, signinMessage.getRlatitude());
+                ps.setInt(13, signinMessage.getResult());
+                return ps.executeUpdate() > 0;
+            }else {
+	            String sql = "update signin set rlatitude=?, rlongitude=? where id=?";
+	            Connection conn = DBUtil.getDBUtil().getConnection();
+	            PreparedStatement ps = conn.prepareStatement(sql);
+	            ps.setDouble(1,signinMessage.getRlatitude());
+	            ps.setDouble(2,signinMessage.getRlongitude());
+	            ps.setInt(3,signId);
+	            return ps.executeUpdate() > 0;
+            }
         }catch (SQLException e){
 	        e.printStackTrace();
         }
@@ -220,6 +267,24 @@ public class GroupDao {
             e.printStackTrace();
         }
         return groupMessages;
+    }
+
+    //获取所有该条签到信息 包括发起签到和确认签到信息
+    public ArrayList<GroupSignInMessage> getAllSingleSignInMessage(int signInId){
+	    ArrayList<GroupSignInMessage> signInMessages = new ArrayList<>();
+	    try {
+	        String sql = "select * from signin where recordid=?";
+	        Connection conn = DBUtil.getDBUtil().getConnection();
+	        PreparedStatement ps = conn.prepareStatement(sql);
+	        ps.setInt(1,signInId);
+	        ResultSet rs = ps.executeQuery();
+	        while (rs.next()){
+	            signInMessages.add(new GroupSignInMessage(rs));
+            }
+        }catch (SQLException e){
+	        e.printStackTrace();
+        }
+        return signInMessages;
     }
 
 

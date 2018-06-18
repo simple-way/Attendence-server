@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UnReceivedMessage implements Serializable{
-    private static final long serialVersionUID = 3L;
+
     int groupId;
     String receiverId;
     int state;

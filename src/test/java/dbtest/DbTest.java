@@ -2,8 +2,11 @@ package dbtest;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
+import com.example.mrc.attendencesystem.entity.Group;
 import com.example.mrc.attendencesystem.entity.GroupMessage;
+import com.example.mrc.attendencesystem.entity.GroupSignInMessage;
 import dao.DBUtil;
+import dao.GroupDao;
 import dao.UserDao;
 import dbtest.dbtestutil.UserTestUtil;
 import org.junit.After;
@@ -48,7 +51,36 @@ public class DbTest {
         UserTestUtil.addOrdinaryMessage(mConnention,groupMessage);
         mConnention.commit();
     }
+    @Test
+    public void insertConfirmSignInRecord() throws SQLException{
+        GroupSignInMessage signInMessage = new GroupSignInMessage();
+        signInMessage.setEndTime(1529322712000L);
+        signInMessage.setGroupId(2);
+        signInMessage.setLatitude(34.824499);
+        signInMessage.setLongitude(114.316553);
+        signInMessage.setOriginatorId("12");
+        signInMessage.setReceiverId("12");
+        signInMessage.setRecordId(80);
+        signInMessage.setRegion(200);
+        signInMessage.setResult(1);
+        signInMessage.setRlatitude(34.824507);
+        signInMessage.setRlongitude(114.31658);
+        signInMessage.setStartTime(1529324800249L);
+        signInMessage.setState(false);
+        signInMessage.setType(2);
+        GroupDao.getGroupDao().insertConfirmSignInRecord(signInMessage);
+    }
+    @Test
+    public void getGroups(){
+        System.out.println(GroupDao.getGroupDao().getGroups("r").size());
+    }
 
+    @Test
+    public void joinGroup(){
+        Group group = new Group(null,null,0);
+        group.setGroupId(2);
+        System.out.println(UserDao.getUserDao().joinGroup("18738997273",group));
+    }
 
 	@After
 	public void after() throws SQLException{

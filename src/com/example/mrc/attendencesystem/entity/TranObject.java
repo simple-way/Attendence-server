@@ -36,6 +36,15 @@ public class TranObject {
     private ArrayList<GroupMessage> groupMessageArrayList;//获取群消息
     private GroupMessage sendGroupMessage;//发送群消息
     private ArrayList<UnReceivedMessage> unReceivedMessages;
+    public ArrayList<User> groupUsers;
+
+    public ArrayList<User> getGroupUsers() {
+        return groupUsers;
+    }
+
+    public void setGroupUsers(ArrayList<User> groupUsers) {
+        this.groupUsers = groupUsers;
+    }
 
     public ArrayList<UnReceivedMessage> getUnReceivedMessages() {
         return unReceivedMessages;

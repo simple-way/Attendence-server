@@ -57,6 +57,20 @@ public class UserDao {
         return false;
     }
 
+    public boolean joinGroup(String phoneNumber, Group group){
+        try {
+            String sql = "insert into grouptouser (groupid, userid) VALUES (?,?)";
+            Connection conn = DBUtil.getDBUtil().getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1,group.getGroupId());
+            ps.setInt(2,getUserId(phoneNumber));
+            return ps.executeUpdate() > 0;
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public ArrayList<UnReceivedMessage> judgeUnReceivedMessage(String phoneNumber) {
         ArrayList<UnReceivedMessage> unReceivedMessages = new ArrayList<>();
         try {
@@ -244,7 +258,7 @@ public class UserDao {
             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1,groupMessage.getGroupId());
             ps.setString(2,groupMessage.getFromId());
-            ps.setInt(3,1);
+            ps.setInt(3,groupMessage.getContentType());
             ps.setString(4,groupMessage.getContent());
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
@@ -262,20 +276,21 @@ public class UserDao {
                     signInMessage.getOriginatorId(),2,"签到");
             //返回插入的到普通消息表中的该消息Id
             int messageId = addOrdinaryMessage(groupMessage);
-            String sql = "INSERT INTO signin (recordid, groupid, originator, longitude," +
-                    " latitude, region, receiver, rlongitude, rlatitude, state, done, result)" +
-                    "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+            String sql = "INSERT INTO signin (recordid,type, groupid, originator," +
+                    "starttime,endtime, longitude, latitude, region)" +
+                    "VALUES (?,?,?,?,?,?,?,?,?)";
 
             Connection conn = DBUtil.getDBUtil().getConnection();
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1,messageId);
-            ps.setInt(2,signInMessage.getGroupId());
-            ps.setString(3,signInMessage.getOriginatorId());
-            ps.setDouble(4,signInMessage.getLongitude());
-            ps.setDouble(5,signInMessage.getLatitude());
-            ps.setInt(6, signInMessage.getRegion());
-            ps.setDouble(7,signInMessage.getRlongitude());
-            ps.setDouble(8,signInMessage.getRlatitude());
+            ps.setInt(2,1);
+            ps.setInt(3,signInMessage.getGroupId());
+            ps.setString(4,signInMessage.getOriginatorId());
+            ps.setLong(5,signInMessage.getStartTime());
+            ps.setLong(6,signInMessage.getEndTime());
+            ps.setDouble(7,signInMessage.getLongitude());
+            ps.setDouble(8,signInMessage.getLatitude());
+            ps.setInt(9, signInMessage.getRegion());
             return ps.executeUpdate() > 0;
         }catch (SQLException e){
             e.printStackTrace();
