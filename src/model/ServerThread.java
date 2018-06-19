@@ -77,7 +77,8 @@ public class ServerThread extends Thread {
                 if (readObject != null) {
                     lastReceiveHeart = System.currentTimeMillis();
                     phone = readObject.getFromUser();
-                    System.out.println("phone:" + phone);
+                    if(readObject.getType() != TranObjectType.REGISTER)
+                        System.out.println("phone:" + phone);
                     if (readObject.getType() != TranObjectType.HEART_TEST) {
                         System.out.println("msg :" + sBuilder.toString());
                     }
@@ -101,8 +102,10 @@ public class ServerThread extends Thread {
                 if (serverResult != null) {
                     map.getAll().forEach(System.out::println);
                     System.out.println("当前out地址" +map.getById(phone));
-                    map.getById(phone).setMessage(serverResult);
-                    //out.setMessage(serverResult);
+                    if(phone != null && phone.length()>0)
+                        map.getById(phone).setMessage(serverResult);
+                    else
+                        out.setMessage(serverResult);
                 }
             }
             if (iReader != null) {
@@ -138,7 +141,9 @@ public class ServerThread extends Thread {
         UserDao userService = UserDao.getUserDao();
         GroupDao groupDao = GroupDao.getGroupDao();
         if (readObject != null) {
-            String phone = readObject.getFromUser();
+            String phone = "";
+            if(readObject.getType() != TranObjectType.REGISTER)
+            phone = readObject.getFromUser();
             // System.out.println("开始接受心跳包"+socket.getInetAddress().getHostAddress());
             if (readObject.getType() == TranObjectType.HEART_TEST) {
                 if (phone != null) {
@@ -330,12 +335,14 @@ public class ServerThread extends Thread {
                     TranObject allUsers = new TranObject(TranObjectType.GET_GROUP_MEMBERS);
                     allUsers.setGroupUsers(users);
                     allUsers.setSuccess(true);
+                    return allUsers;
                 case SEND_JOIN_REQUEST:
                     Group group3 = readObject.getGroup();
                     String phoneNumber = readObject.getFromUser();
                     boolean joinGroupResult = userService.joinGroup(phoneNumber,group3);
                     TranObject joinGroup = new TranObject(TranObjectType.SEND_JOIN_REQUEST);
                     joinGroup.setSuccess(joinGroupResult);
+                    return joinGroup;
                 default:
                     break;
             }

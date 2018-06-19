@@ -208,11 +208,11 @@ public class GroupDao {
     //创建一个群
     public boolean addGroup(Group group){
 	    try {
-	        String sql = "insert into group (groupname, adminid, introduce) values(?,?,?)";
+	        String sql = "insert into `group` (groupname, adminid,introduce) values(?,?,?)";
 	        Connection conn = DBUtil.getDBUtil().getConnection();
 	        PreparedStatement ps = conn.prepareStatement(sql);
 	        ps.setString(1,group.getGroupName());
-	        ps.setInt(2,group.getAdminId());
+	        ps.setString(2,group.getAdminId());
 	        ps.setString(3,group.getIntroduce());
 	        return ps.executeUpdate() > 0;
         }catch (SQLException e){

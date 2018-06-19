@@ -77,9 +77,14 @@ public class DbTest {
 
     @Test
     public void joinGroup(){
-        Group group = new Group(null,null,0);
+        Group group = new Group(null,null,"");
         group.setGroupId(2);
         System.out.println(UserDao.getUserDao().joinGroup("18738997273",group));
+    }
+
+    @Test
+    public void insertOrdinaryMessage(){
+        UserDao.getUserDao().addOrdinaryMessage(new GroupMessage(2,"12",1,"你好"));
     }
 
 	@After

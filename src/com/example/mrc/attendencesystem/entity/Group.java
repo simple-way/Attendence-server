@@ -7,9 +7,9 @@ public class Group {
     int groupId;
     String groupName;
 	String introduce;
-	int adminId;
+	String adminId;
 
-    public Group(String groupName, String introduce, int adminId) {
+    public Group(String groupName, String introduce, String adminId) {
         this.groupName = groupName;
         this.introduce = introduce;
         this.adminId = adminId;
@@ -19,7 +19,7 @@ public class Group {
         try {
             setGroupId(resultSet.getInt("id"));
             setGroupName(resultSet.getString("groupname"));
-            setAdminId(resultSet.getInt("adminid"));
+            setAdminId(resultSet.getString("adminid"));
             setIntroduce(resultSet.getString("introduce"));
         } catch (SQLException e) {
             e.printStackTrace();
@@ -50,11 +50,11 @@ public class Group {
         this.introduce = introduce;
     }
 
-    public int getAdminId() {
+    public String getAdminId() {
         return adminId;
     }
 
-    public void setAdminId(int adminId) {
+    public void setAdminId(String adminId) {
         this.adminId = adminId;
     }
 }

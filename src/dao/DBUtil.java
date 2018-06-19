@@ -18,7 +18,7 @@ public class DBUtil {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			Connection conn=DriverManager.
-					getConnection("jdbc:mysql://localhost/attendencesystem","root","");
+					getConnection("jdbc:mysql://localhost/attendencesystem?characterEncoding=gbk","root","");
 			return conn;
 		} catch (Exception e) {
 			e.printStackTrace();
